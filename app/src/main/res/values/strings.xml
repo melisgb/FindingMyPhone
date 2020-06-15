@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">FindingMyPhone</string>
+    <string name="app_name">Finding My People</string>
+    <string name="login">Login</string>
+    <string name="phone_hint">Enter your phone number</string>
 </resources>
