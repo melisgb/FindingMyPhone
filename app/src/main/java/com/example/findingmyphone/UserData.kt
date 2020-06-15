@@ -20,13 +20,14 @@ class UserData {
         editor.commit()
     }
 
-    fun getPhoneNumber() {
+    fun getPhoneNumber() : String {
         val phoneNumber = sharedRef!!.getString("phoneNumber", "empty") //if empty, return "empty"
         if(phoneNumber.equals("empty")){
             val intent = Intent(context, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context!!.startActivity(intent)
         }
+        return phoneNumber!!
     }
 
 
