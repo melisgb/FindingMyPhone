@@ -32,5 +32,9 @@ class UserData {
     }
 
 
+    companion object{
+        var trackers : MutableMap<String, String> = HashMap()
+    }
+
 }
 

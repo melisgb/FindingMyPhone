@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.*
+import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -22,10 +23,15 @@ class TrackingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tracking)
 
         //generateDummyData()
-        checkPermission()
 
         contactAdapter = ContactAdapter(this, contactsList)
         listView_contacts.adapter = contactAdapter
+
+        listView_contacts.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            UserData.trackers.remove(contactsList[position].phone)
+            refreshData()
+        }
+        refreshData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -117,8 +123,11 @@ class TrackingActivity : AppCompatActivity() {
                                 ContactsContract.CommonDataKinds.Phone.NUMBER))
                             val name = phonesCursor.getString(phonesCursor.getColumnIndex(
                                 ContactsContract.Contacts.DISPLAY_NAME))
-                            contactsList.add(Contact(name, phoneNumber))
-                            contactAdapter!!.notifyDataSetChanged()
+//                            contactsList.add(Contact(name, phoneNumber))
+                            UserData.trackers.put(phoneNumber, name)
+//                            contactAdapter!!.notifyDataSetChanged()
+                            refreshData()
+
                         }
                     }
 
@@ -128,5 +137,13 @@ class TrackingActivity : AppCompatActivity() {
                 super.onActivityResult(requestCode, resultCode, data)
             }
         }
+    }
+
+    fun refreshData(){
+        contactsList.clear()
+        for((key,value) in UserData.trackers){
+            contactsList.add(Contact(value, key))
+        }
+        contactAdapter!!.notifyDataSetChanged()
     }
 }
