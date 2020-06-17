@@ -6,7 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_login.*
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LoginActivity : AppCompatActivity() {
     private var mAuth : FirebaseAuth? = null
@@ -44,6 +48,12 @@ class LoginActivity : AppCompatActivity() {
         val userData =  UserData(applicationContext)
         userData.savePhoneNumber(phoneNumber)
         Log.d("User Info", phoneNumber)
+
+        val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:MM:ss")
+        val currDate = Date()
+        val mDatabase = FirebaseDatabase.getInstance().reference
+        mDatabase.child("Users").child(phoneNumber).child("request")
+            .setValue(dateFormat.format(currDate).toString())
         finish()
     }
 }
