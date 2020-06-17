@@ -8,6 +8,11 @@ class UserData {
     var context : Context? = null
     var sharedRef : SharedPreferences? = null
 
+    companion object{
+        var trackers : MutableMap<String, String> = HashMap()
+    }
+
+
     constructor(context : Context){
         this.context = context
         this.sharedRef = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
@@ -31,10 +36,40 @@ class UserData {
         return phoneNumber!!
     }
 
+    fun saveContactInfo(){
+        var listOfTrackers = ""
+        for((key, value) in trackers){
+            if(listOfTrackers.length == 0){
+                listOfTrackers = key + "%" + value + "%"
+            }
+            else{
+                listOfTrackers += key + "%" + value + "%"
+            }
+        }
 
-    companion object{
-        var trackers : MutableMap<String, String> = HashMap()
+        if(listOfTrackers.length == 0){
+            listOfTrackers = "empty"
+        }
+
+        val editor = sharedRef!!.edit()
+        editor.putString("listOfTrackers", listOfTrackers)
+        editor.commit()
     }
+
+    fun loadContactInfo(){
+        trackers.clear()
+        var listOfTrackers = sharedRef!!.getString("listOfTrackers", "empty")
+        if(!listOfTrackers.equals("empty")){
+            val usersInfo = listOfTrackers!!.split("%").toTypedArray()
+
+            for(i in 0..usersInfo.size-2 step 2){
+                trackers.put(usersInfo[i], usersInfo[i+1])
+            }
+
+        }
+
+    }
+
 
 }
 

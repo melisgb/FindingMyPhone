@@ -18,11 +18,13 @@ import kotlinx.android.synthetic.main.contact_element.view.*
 class TrackingActivity : AppCompatActivity() {
     var contactsList = ArrayList<Contact>()
     var contactAdapter : ContactAdapter? = null
+    var userData : UserData? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracking)
 
         //generateDummyData()
+        userData = UserData(applicationContext)
 
         contactAdapter = ContactAdapter(this, contactsList)
         listView_contacts.adapter = contactAdapter
@@ -30,7 +32,9 @@ class TrackingActivity : AppCompatActivity() {
         listView_contacts.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             UserData.trackers.remove(contactsList[position].phone)
             refreshData()
+            userData!!.saveContactInfo()
         }
+        userData!!.loadContactInfo()
         refreshData()
     }
 
@@ -127,6 +131,7 @@ class TrackingActivity : AppCompatActivity() {
                             UserData.trackers.put(phoneNumber, name)
 //                            contactAdapter!!.notifyDataSetChanged()
                             refreshData()
+                            userData!!.saveContactInfo()
 
                         }
                     }
