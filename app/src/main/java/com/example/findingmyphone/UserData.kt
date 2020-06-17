@@ -10,6 +10,16 @@ class UserData {
 
     companion object{
         var trackers : MutableMap<String, String> = HashMap()
+
+        fun formatPhoneNum(phoneNumber: String) : String {
+            //this function is to replace the phoneNumber into a phone with different format.
+            var justNumber = phoneNumber.replace("^[0-9]".toRegex(), "")
+            if(phoneNumber[0] == '+'){
+                justNumber = "+" + justNumber
+            }
+            return justNumber
+        }
+
     }
 
 

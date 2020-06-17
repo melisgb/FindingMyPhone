@@ -123,11 +123,12 @@ class TrackingActivity : AppCompatActivity() {
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId, null, null)
 
                             phonesCursor!!.moveToFirst()
-                            val phoneNumber = phonesCursor.getString(phonesCursor.getColumnIndex(
+                            var phoneNumber = phonesCursor.getString(phonesCursor.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER))
                             val name = phonesCursor.getString(phonesCursor.getColumnIndex(
                                 ContactsContract.Contacts.DISPLAY_NAME))
 //                            contactsList.add(Contact(name, phoneNumber))
+                            phoneNumber = UserData.formatPhoneNum(phoneNumber)
                             UserData.trackers.put(phoneNumber, name)
 //                            contactAdapter!!.notifyDataSetChanged()
                             refreshData()
