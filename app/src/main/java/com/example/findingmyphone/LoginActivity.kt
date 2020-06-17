@@ -52,8 +52,9 @@ class LoginActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:MM:ss")
         val currDate = Date()
         val mDatabase = FirebaseDatabase.getInstance().reference
-        mDatabase.child("Users").child(phoneNumber).child("request")
+        mDatabase.child("Users").child(phoneNumber).child("login")
             .setValue(dateFormat.format(currDate).toString())
+        mDatabase.child("Users").child(phoneNumber).child("trackers").setValue(true)
         finish()
     }
 }

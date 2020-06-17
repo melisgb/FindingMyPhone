@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_tracking.*
 import kotlinx.android.synthetic.main.contact_element.view.*
 
@@ -30,9 +31,19 @@ class TrackingActivity : AppCompatActivity() {
         listView_contacts.adapter = contactAdapter
 
         listView_contacts.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            UserData.trackers.remove(contactsList[position].phone)
+            val contactInfo = contactsList[position]
+            UserData.trackers.remove(contactInfo.phone)
             refreshData()
             userData!!.saveContactInfo()
+
+            val mDatabase = FirebaseDatabase.getInstance().reference
+            val userData = UserData(applicationContext)
+            try{
+                mDatabase.child("Users").child(contactInfo.phone.toString()).child("trackers").child(userData.getPhoneNumber()).removeValue()
+            }catch (ex: Exception){
+                println("Firebase Error ${ex.message}")
+            }
+
         }
         userData!!.loadContactInfo()
         refreshData()
@@ -133,6 +144,11 @@ class TrackingActivity : AppCompatActivity() {
 //                            contactAdapter!!.notifyDataSetChanged()
                             refreshData()
                             userData!!.saveContactInfo()
+
+                            val mDatabase = FirebaseDatabase.getInstance().reference
+                            val userData = UserData(applicationContext)
+                            mDatabase.child("Users").child(phoneNumber).child("trackers").child(userData.getPhoneNumber()).setValue(true)
+
 
                         }
                     }
