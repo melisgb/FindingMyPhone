@@ -40,7 +40,7 @@ class TrackingActivity : AppCompatActivity() {
             val mDatabase = FirebaseDatabase.getInstance().reference
             val userData = UserData(applicationContext)
             try{
-                mDatabase.child("Users").child(contactInfo.phone.toString()).child("trackers").child(userData.getPhoneNumber()).removeValue()
+                mDatabase.child("Users").child(contactInfo.phone!!).child("trackers").child(userData.getPhoneNumber()).removeValue()
             }catch (ex: Exception){
                 println("Firebase Error ${ex.message}")
             }

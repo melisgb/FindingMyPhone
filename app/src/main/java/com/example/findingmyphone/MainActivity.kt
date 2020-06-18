@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         val userData = UserData(this)
         val phoneNum = userData.getPhoneNumber()
+        editText.setText(phoneNum)
 
         if(phoneNum.equals("empty")){
             val intent = Intent(this, LoginActivity::class.java)
@@ -41,9 +42,9 @@ class MainActivity : AppCompatActivity() {
         contactAdapt = ContactAdapter(this, contactsList)
         listView_trackers.adapter = contactAdapt
 
-//        listView_trackers.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-//            val contactInfo = contactsList[position]
-//        }
+        listView_trackers.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            val contactInfo = contactsList[position]
+        }
     }
 
     override fun onResume() {
@@ -59,32 +60,32 @@ class MainActivity : AppCompatActivity() {
         else {
             mDatabase.child("Users").child(userData.getPhoneNumber()).child("trackers")
                 .addValueEventListener(object : ValueEventListener{
-                    override fun onCancelled(p0: DatabaseError) {
-                        Log.d("Firebase", "Firebase Getting users cancelled ${p0.message}")
-                    }
-
                     override fun onDataChange(dataSnapShot: DataSnapshot) {
                         try {
-                            var dataSnap = dataSnapShot.getValue(object : GenericTypeIndicator<HashMap<String, String>>() {})
+                            var dataSnap = dataSnapShot.getValue(object : GenericTypeIndicator<HashMap<String, Boolean>>() {})
                             contactsList.clear()
 
-                            if (dataSnap == null) {
+                            if (dataSnap == null ){
                                 contactsList.add(Contact("No value", "NV"))
                                 contactAdapt!!.notifyDataSetChanged()
                                 return
                             }
                             else {
                                 for (phoneKey in dataSnap.keys) {
-                                    val name = dataSnap[phoneKey] as String
+                                    val name = dataSnap[phoneKey] as Boolean
                                     println("Name Tracker: $name")
-                                    contactsList.add(Contact(name, phoneKey))
+                                    contactsList.add(Contact(name.toString(), phoneKey))
                                 }
                                 contactAdapt!!.notifyDataSetChanged()
                             }
                         }catch (ex: Exception){
-                            Log.e("Firebase Getting Tracks", ex.message)
+                            Log.e("Firebase Getting Tracks", ex.message, ex)
                         }
                     }
+                    override fun onCancelled(p0: DatabaseError) {
+                        Log.d("Firebase", "Firebase Getting users cancelled ${p0.message}")
+                    }
+
 
                 })
         }

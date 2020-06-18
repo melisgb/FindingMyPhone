@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
         val mDatabase = FirebaseDatabase.getInstance().reference
         mDatabase.child("Users").child(phoneNumber).child("login")
             .setValue(dateFormat.format(currDate).toString())
-        mDatabase.child("Users").child(phoneNumber).child("trackers").setValue(true)
+//        mDatabase.child("Users").child(phoneNumber).child("trackers").setValue(true)
         finish()
     }
 }
