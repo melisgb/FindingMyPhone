@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         getTrackers()
+        checkPermission()
     }
 
     fun getTrackers(){
@@ -72,8 +73,8 @@ class MainActivity : AppCompatActivity() {
                             }
                             else {
                                 for (phoneKey in dataSnap.keys) {
-                                    val name = dataSnap[phoneKey] as Boolean
-                                    println("Name Tracker: $name")
+                                    val name = myContactsList[phoneKey]
+                                        //when accesing dataSnap[phoneKey], will return always true.
                                     contactsList.add(Contact(name.toString(), phoneKey))
                                 }
                                 contactAdapt!!.notifyDataSetChanged()
@@ -109,6 +110,60 @@ class MainActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    //to get Contacts App info
+    val PERMISION_READ_CODE = 123
+    fun checkPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(android.Manifest.permission.READ_CONTACTS),
+                PERMISION_READ_CODE
+            )
+            return
+        }
+        loadContacts()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode){
+            PERMISION_READ_CODE -> {
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    loadContacts()
+                }
+                else{
+                    Toast.makeText(applicationContext, "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
+    }
+
+    var myContactsList = HashMap<String, String>()
+    fun loadContacts(){
+        myContactsList.clear()
+
+        val cursor = contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,null, null)
+
+        cursor!!.moveToFirst()
+        do{
+            val contactName = cursor.getString(
+                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+            val contactPhone = cursor.getString(
+                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+            myContactsList.put(UserData.formatPhoneNum(contactPhone), contactName)
+        }while((cursor.moveToNext()))
+
     }
 
 
