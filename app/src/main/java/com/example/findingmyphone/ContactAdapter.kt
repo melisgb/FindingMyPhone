@@ -18,13 +18,24 @@ class ContactAdapter : BaseAdapter {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val contact = listOfContacts[position]
-        var inflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val contactElemView = inflater.inflate(R.layout.contact_element, null)
 
-        contactElemView.txtView_contactName.text = contact.name
-        contactElemView.txtView_contactPhone.text = contact.phone
+        if(contact.name=="No value") {
+            var inflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val contactElemView = inflater.inflate(R.layout.contact_none_element, null)
 
-        return contactElemView
+            contactElemView.txtView_contactName.text = contact.name
+
+            return contactElemView
+        }
+        else {
+            var inflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val contactElemView = inflater.inflate(R.layout.contact_element, null)
+
+            contactElemView.txtView_contactName.text = contact.name
+            contactElemView.txtView_contactPhone.text = contact.phone
+
+            return contactElemView
+        }
     }
 
     override fun getItem(position: Int): Any {

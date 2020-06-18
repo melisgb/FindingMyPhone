@@ -2,4 +2,5 @@
     <string name="app_name">Finding My People</string>
     <string name="login">Login</string>
     <string name="phone_hint">Enter your phone number</string>
+    <string name="no_data">No data available</string>
 </resources>

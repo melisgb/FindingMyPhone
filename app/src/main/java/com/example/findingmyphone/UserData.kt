@@ -13,10 +13,12 @@ class UserData {
 
         fun formatPhoneNum(phoneNumber: String) : String {
             //this function is to replace the phoneNumber into a phone with different format.
-            var justNumber = phoneNumber.replace("^[0-9]".toRegex(), "")
-            if(phoneNumber[0] == '+'){
-                justNumber = "+" + justNumber
-            }
+            val re = Regex("[^0-9]")
+            var justNumber = re.replace(phoneNumber, "")
+
+//            if(phoneNumber[0] == '+'){
+//                justNumber = "+" + justNumber
+//            }
             return justNumber
         }
 
@@ -38,11 +40,6 @@ class UserData {
     fun getPhoneNumber() : String {
         val phoneNumber = sharedRef!!.getString("phoneNumber", "empty") //if empty, return "empty"
 
-        if(phoneNumber.equals("empty")){
-            val intent = Intent(context, LoginActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context!!.startActivity(intent)
-        }
         return phoneNumber!!
     }
 
@@ -50,10 +47,10 @@ class UserData {
         var listOfTrackers = ""
         for((key, value) in trackers){
             if(listOfTrackers.length == 0){
-                listOfTrackers = key + "%" + value + "%"
+                listOfTrackers = key + "%" + value
             }
             else{
-                listOfTrackers += key + "%" + value + "%"
+                listOfTrackers += "%" + key + "%" + value
             }
         }
 

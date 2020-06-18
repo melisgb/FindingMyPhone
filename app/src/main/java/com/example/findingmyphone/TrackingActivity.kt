@@ -20,6 +20,7 @@ class TrackingActivity : AppCompatActivity() {
     var contactsList = ArrayList<Contact>()
     var contactAdapter : ContactAdapter? = null
     var userData : UserData? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracking)
