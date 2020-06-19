@@ -51,6 +51,17 @@ class MainActivity : AppCompatActivity() {
 
         listView_trackers.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val contactInfo = contactsList[position]
+
+            val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:MM:ss")
+            val currDate = Date()
+            val mDatabase = FirebaseDatabase.getInstance().reference
+            mDatabase.child("Users").child(contactInfo.phone!!).child("login")
+                .setValue(dateFormat.format(currDate).toString())
+
+            val intent = Intent(applicationContext, MapsActivity::class.java)
+            intent.putExtra("phoneNumber", contactInfo.phone)
+            startActivity(intent)
+
         }
     }
 
@@ -231,7 +242,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 override fun onCancelled(p0: DatabaseError) {
-                    Log.e("Firebase", "Getting request node ${p0.message}")
+                    Log.e("Firebase", "Getting request cancelled ${p0.message}")
                 }
 
             })

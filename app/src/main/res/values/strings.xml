@@ -3,4 +3,5 @@
     <string name="login">Login</string>
     <string name="phone_hint">Enter your phone number</string>
     <string name="no_data">No data available</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
