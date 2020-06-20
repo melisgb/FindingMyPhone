@@ -17,6 +17,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     var mDatabaseRef : DatabaseReference? = null
+    var contactPhoneNum : String? = null
 
     companion object{
         var contactLocation = LatLng(-0.0, 0.0)
@@ -28,13 +29,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
 
         val intentBundle = intent.extras
-        val contactPhoneNum = intentBundle!!.getString("phoneNumber")
+        contactPhoneNum = intentBundle!!.getString("phoneNumber")
         mDatabaseRef = FirebaseDatabase.getInstance().reference
 
         mDatabaseRef!!.child("Users").child(contactPhoneNum!!).child("location")
             .addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(dataSnap: DataSnapshot) {
-                    Log.d("Carlos printea", "")
                     try{
                         var snap = dataSnap.getValue(object : GenericTypeIndicator<HashMap<String, Any>>() {})
 
@@ -79,7 +79,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.addMarker(MarkerOptions().position(contactLocation).title(lastLogin))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(contactLocation, 15f))
+        mMap.addMarker(MarkerOptions().position(contactLocation).title(contactPhoneNum)
+            .snippet("${contactLocation.latitude}, ${contactLocation.longitude}"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(contactLocation, 5f))
+
+        Log.d("Maps", "${contactLocation.latitude.toDouble()}, ${contactLocation.longitude}")
+
     }
 }

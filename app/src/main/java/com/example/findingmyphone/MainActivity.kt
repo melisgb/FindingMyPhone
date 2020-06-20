@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
             val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:MM:ss")
             val currDate = Date()
-            val mDatabase = FirebaseDatabase.getInstance().reference
             mDatabase.child("Users").child(contactInfo.phone!!).child("login")
                 .setValue(dateFormat.format(currDate).toString())
 
@@ -65,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    var isLocationGranted = false
     override fun onResume() {
         super.onResume()
 
@@ -74,8 +72,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
         getTrackers()
+        if(MyService.isServiceRunning) return
         checkContactsAppPermission()
-        if(isLocationGranted) return
         checkLocationPermission()
     }
 
@@ -179,20 +177,24 @@ class MainActivity : AppCompatActivity() {
 
     var myContactsList = HashMap<String, String>()
     fun loadContacts(){
-        myContactsList.clear()
+        try{
+            myContactsList.clear()
 
-        val cursor = contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,null, null)
+            val cursor = contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,null, null)
 
-        cursor!!.moveToFirst()
-        do{
-            val contactName = cursor.getString(
-                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-            val contactPhone = cursor.getString(
-                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+            cursor!!.moveToFirst()
+            do{
+                val contactName = cursor.getString(
+                    cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val contactPhone = cursor.getString(
+                    cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
-            myContactsList.put(UserData.formatPhoneNum(contactPhone), contactName)
-        }while((cursor.moveToNext()))
+                myContactsList.put(UserData.formatPhoneNum(contactPhone), contactName)
+            }while((cursor.moveToNext()))
+        }catch (ex: Exception){
+            Log.e("Error Loading Contacts", ex.message)
+        }
 
     }
 
@@ -211,41 +213,16 @@ class MainActivity : AppCompatActivity() {
 
         }
         getUserLocation()
-        isLocationGranted = true
     }
 
 
     fun getUserLocation(){
-        var userLocation = MyLocation()
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3f, userLocation)
-
-        //everytime the request node is updated, run this (save the location and lastLogin Info into the node of this user).
-        val userData  = UserData(this)
-        val userPhone = userData.getPhoneNumber()
-
-        mDatabase.child("Users").child(userPhone).child("login")
-            .addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(p0: DataSnapshot) {
-                    if(userLocation == null) return
-
-                    mDatabase.child("Users").child(userPhone).child("location")
-                        .child("lat").setValue(userLocation.myLocation!!.latitude)
-                    mDatabase.child("Users").child(userPhone).child("location")
-                        .child("long").setValue(userLocation.myLocation!!.longitude)
-
-                    //get time
-                    val dateForm= SimpleDateFormat("yyyy/MM/dd HH:MM:ss")
-                    val date = Date()
-                    mDatabase.child("Users").child(userPhone).child("location")
-                        .child("lastSession").setValue(dateForm.format(date))
-
-                }
-                override fun onCancelled(p0: DatabaseError) {
-                    Log.e("Firebase", "Getting request cancelled ${p0.message}")
-                }
-
-            })
+        //start service to run in background
+        if(!MyService.isServiceRunning){
+            val intent = Intent(baseContext, MyService::class.java)
+//            startActivity(intent)
+            startService(intent)
+        }
     }
 
 
